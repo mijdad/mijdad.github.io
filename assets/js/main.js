@@ -1,5 +1,5 @@
 /* Muhammed Mijdad portfolio: projects, cart, WhatsApp message, scroll animations.
-   To add a project or hide the mentor line, edit data/site.json (no code changes needed). */
+   Projects and the mentor switch live in data/site.json, edited through Pages CMS (app.pagescms.org). */
 (function () {
   'use strict';
 
@@ -93,13 +93,12 @@
       el('div', { class: 'shot-bar' }, [el('i'), el('i'), el('i'), el('span', { text: domain(p.url) })])
     ]);
     if (p.image) {
-      shot.appendChild(el('img', { src: p.image, alt: 'Homepage of ' + p.name, loading: 'lazy', width: '1200', height: '750' }));
+      shot.appendChild(el('img', { src: String(p.image).replace(/^\//, ''), alt: 'Homepage of ' + p.name, loading: 'lazy', width: '1200', height: '750' }));
     } else {
       var ph = el('div', { class: 'ph', text: p.name });
       ph.style.background = p.color || '#D9D4C5';
       shot.appendChild(ph);
     }
-    shot.appendChild(el('span', { class: 'live', text: 'LIVE' }));
     shot.appendChild(el('span', { class: 'num', text: pad(i) }));
 
     var loc = el('span', { class: 'loc' });
@@ -119,7 +118,8 @@
   }
 
   function renderProjects(data) {
-    var projects = (data && data.projects) || [];
+    // Newest project = the last one added in the editor, so show the list in reverse.
+    var projects = ((data && data.projects) || []).slice().reverse();
     $all('[data-live-count]').forEach(function (n) { n.textContent = projects.length; });
 
     $all('[data-work-grid]').forEach(function (grid) {
@@ -129,6 +129,11 @@
       list.forEach(function (p, i) { grid.insertBefore(card(p, i), before); });
     });
 
+    if (projects[0] && projects[0].image) {
+      var hi = document.querySelector('[data-hero-img]'), hd = document.querySelector('[data-hero-domain]');
+      if (hi) hi.src = String(projects[0].image).replace(/^\//, '');
+      if (hd) hd.textContent = domain(projects[0].url);
+    }
     var viewAll = document.querySelector('[data-view-all]');
     if (viewAll) viewAll.hidden = projects.length <= 4;
 
