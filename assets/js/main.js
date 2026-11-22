@@ -26,7 +26,7 @@
   function waMessage() {
     var need = cart.store && cart.ads ? 'a Shopify store and Meta ads'
       : cart.store ? 'a Shopify store' : cart.ads ? 'Meta ads' : 'working with you';
-    return 'Hi Muhammed, I saw your portfolio. I am interested in ' + need + '. My brand is: ';
+    return 'Hi Mijdad, I saw your portfolio. I am interested in ' + need + '. My brand is: ';
   }
   function updateWa() {
     var href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(waMessage());
@@ -163,7 +163,7 @@
   var PLANS = { store: 'the Shopify store plan', both: 'the Store + ads bundle', ads: 'the Meta ads plan' };
   $all('[data-wa-plan]').forEach(function (a) {
     var plan = PLANS[a.getAttribute('data-wa-plan')] || 'working with you';
-    a.href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('Hi Muhammed, I saw your portfolio. I would like ' + plan + '. My brand is: ');
+    a.href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('Hi Mijdad, I saw your portfolio. I would like ' + plan + '. My brand is: ');
   });
 
   /* ---------- start ---------- */
