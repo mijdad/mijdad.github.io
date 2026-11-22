@@ -159,6 +159,13 @@
     items.forEach(function (n, i) { n.style.transitionDelay = Math.min(i % 4, 3) * 80 + 'ms'; io.observe(n); });
   }
 
+  /* "Select this plan" buttons: open WhatsApp with that plan named */
+  var PLANS = { store: 'the Shopify store plan', both: 'the Store + ads bundle', ads: 'the Meta ads plan' };
+  $all('[data-wa-plan]').forEach(function (a) {
+    var plan = PLANS[a.getAttribute('data-wa-plan')] || 'working with you';
+    a.href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('Hi Muhammed, I saw your portfolio. I would like ' + plan + '. My brand is: ');
+  });
+
   /* ---------- start ---------- */
   $all('[data-year]').forEach(function (n) { n.textContent = new Date().getFullYear(); });
   bindCart();
