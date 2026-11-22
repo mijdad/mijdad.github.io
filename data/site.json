@@ -2,22 +2,13 @@
   "showMentor": true,
   "projects": [
     {
-      "name": "Hush N Hem",
-      "url": "https://hushnhem.com/",
-      "category": "Baby & newborn fashion",
-      "location": "Calicut, Kerala",
-      "description": "A soft, minimal store for baby clothing, accessories and custom gift hampers.",
-      "image": "assets/img/work-hush.webp",
-      "color": "#E8DED2"
-    },
-    {
-      "name": "Red Ribbon Cakes",
-      "url": "https://redribboncakes.com/",
-      "category": "Bakery & gifting",
-      "location": "Dubai, UAE",
-      "description": "An online cake shop with same-day delivery, occasion collections and custom photo cakes.",
-      "image": "assets/img/work-redribbon.webp",
-      "color": "#F6E3E1"
+      "name": "Jersey Vault",
+      "url": "https://jerseyvault.in/",
+      "category": "Football jerseys",
+      "location": "Malappuram, Kerala",
+      "description": "Retro, special-edition and World Cup kits for football fans across India.",
+      "image": "/assets/img/work-jerseyvault.webp",
+      "color": "#151515"
     },
     {
       "name": "MyYellow",
@@ -25,17 +16,26 @@
       "category": "Women's casual wear",
       "location": "Malappuram, Kerala",
       "description": "Expressive hoodies, tees and sweatshirts designed for women.",
-      "image": "assets/img/work-myyellow.webp",
+      "image": "/assets/img/work-myyellow.webp",
       "color": "#F6D84A"
     },
     {
-      "name": "Jersey Vault",
-      "url": "https://jerseyvault.in/",
-      "category": "Football jerseys",
-      "location": "Malappuram, Kerala",
-      "description": "Retro, special-edition and World Cup kits for football fans across India.",
-      "image": "assets/img/work-jerseyvault.webp",
-      "color": "#151515"
+      "name": "Red Ribbon Cakes",
+      "url": "https://redribboncakes.com/",
+      "category": "Bakery & gifting",
+      "location": "Dubai, UAE",
+      "description": "An online cake shop with same-day delivery, occasion collections and custom photo cakes.",
+      "image": "/assets/img/work-redribbon.webp",
+      "color": "#F6E3E1"
+    },
+    {
+      "name": "Hush N Hem",
+      "url": "https://hushnhem.com/",
+      "category": "Baby & newborn fashion",
+      "location": "Calicut, Kerala",
+      "description": "A soft, minimal store for baby clothing, accessories and custom gift hampers.",
+      "image": "/assets/img/work-hush.webp",
+      "color": "#E8DED2"
     }
   ]
 }
