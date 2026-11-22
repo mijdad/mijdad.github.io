@@ -500,6 +500,12 @@ body{background:var(--bone);letter-spacing:-.005em;-webkit-font-smoothing:antial
 @media (max-width:900px){.ib-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:480px){.ib-tiles li{grid-template-columns:44px minmax(0,1fr);padding:18px}.ib-n{display:none}.ib-ico{width:44px;height:44px}}
 
+.add{display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+.add span{transition:transform .3s}
+.add:hover{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+.add:hover span{transform:translateX(4px)}
+.bundle.featured .add:hover{background:var(--ink);color:var(--lime);border-color:var(--ink)}
+
 /* ---------- Motion ---------- */
 .js .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
 .js .reveal.in{opacity:1;transform:none}
