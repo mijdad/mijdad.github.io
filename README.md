@@ -2,31 +2,20 @@
 
 Live at: https://mijdad.github.io
 
-## Add a new project (no code)
+## Add a new project (easy way: Pages CMS)
 
-1. **Upload the screenshot:** open the `assets/img` folder on GitHub → **Add file → Upload files** → drop your image (a wide homepage screenshot, about 1200 px wide; name it like `work-brandname.webp` or `.jpg`) → **Commit changes**.
-2. **Add the project details:** open `data/site.json` → click the ✏️ pencil → copy one project block (from `{` to `},`) and paste it **at the top of the list** (newest first). Change the details:
+1. Go to https://app.pagescms.org and sign in with GitHub.
+2. Open **mijdad / mijdad.github.io**, then **Portfolio**.
+3. Under **Projects**, click **Add an entry**, fill in the form and upload the homepage screenshot.
+4. Click **Save**. The site updates in 1–2 minutes.
 
-```json
-{
-  "name": "Brand Name",
-  "url": "https://brand.com/",
-  "category": "What they sell",
-  "location": "City, State",
-  "description": "One short sentence about the store.",
-  "image": "assets/img/work-brandname.webp",
-  "color": "#E8DED2"
-},
-```
+The last project in the list shows first on the site. The home page shows the 4 newest, and **View all works** appears automatically when you have more than 4.
 
-3. Click **Commit changes**. The site updates in 1–2 minutes.
-
-- The home page shows the 4 newest projects. The **View all works** button appears automatically when you have more than 4.
-- Every comma and quote matters in `site.json`. If projects disappear after an edit, a comma is missing or extra.
+You can also edit `data/site.json` directly on GitHub; keep every quote and comma in place.
 
 ## Hide the mentor line
 
-In `data/site.json`, change `"showMentor": true` to `"showMentor": false`.
+In Pages CMS, turn off **Show the TBM Ecommerce Academy mentor line** and save.
 
 ## Files
 
