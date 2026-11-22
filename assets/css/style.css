@@ -479,7 +479,7 @@ body{background:var(--bone);letter-spacing:-.005em;-webkit-font-smoothing:antial
 .ib-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(48px,6vw,96px);align-items:center}
 .ib-copy{display:flex;flex-direction:column;gap:28px}
 .ib .kicker{color:var(--sage)}
-.ib-title{margin:0;font-family:"Inter Display",var(--sans);font-weight:800;font-size:clamp(44px,5.6vw,84px);line-height:.98;letter-spacing:-.045em}
+.ib-title{margin:0;font-family:"Inter Display",var(--sans);font-weight:800;white-space:nowrap;font-size:min(clamp(44px,5.4vw,76px),calc((100vw - 48px) / 7));line-height:.98;letter-spacing:-.045em}
 .hl-d{background:none;color:var(--lime)}
 .ib-lead{margin:0;max-width:520px;font-size:18px;line-height:1.65;color:var(--sage)}
 .ib .choose-label{color:var(--sage)}
