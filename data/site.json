@@ -7,7 +7,7 @@
       "category": "Football jerseys",
       "location": "Malappuram, Kerala",
       "description": "Retro, special-edition and World Cup kits for football fans across India.",
-      "image": "/assets/img/work-jerseyvault.webp",
+      "image": "assets/img/work-jerseyvault.webp",
       "color": "#151515"
     },
     {
@@ -16,7 +16,7 @@
       "category": "Women's casual wear",
       "location": "Malappuram, Kerala",
       "description": "Expressive hoodies, tees and sweatshirts designed for women.",
-      "image": "/assets/img/work-myyellow.webp",
+      "image": "assets/img/work-myyellow.webp",
       "color": "#F6D84A"
     },
     {
@@ -25,7 +25,7 @@
       "category": "Bakery & gifting",
       "location": "Dubai, UAE",
       "description": "An online cake shop with same-day delivery, occasion collections and custom photo cakes.",
-      "image": "/assets/img/work-redribbon.webp",
+      "image": "assets/img/work-redribbon.webp",
       "color": "#F6E3E1"
     },
     {
@@ -34,7 +34,7 @@
       "category": "Baby & newborn fashion",
       "location": "Calicut, Kerala",
       "description": "A soft, minimal store for baby clothing, accessories and custom gift hampers.",
-      "image": "/assets/img/work-hush.webp",
+      "image": "assets/img/work-hush.webp",
       "color": "#E8DED2"
     }
   ]
