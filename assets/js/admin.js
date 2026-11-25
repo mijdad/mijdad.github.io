@@ -8,14 +8,14 @@
   var BRANCH = 'main';
   var API = 'https://api.github.com/repos/' + REPO;
   var DATA_PATH = 'data/site.json';
-  var IMG_W = 1500, IMG_MAX_H = 6000;   // page screenshots keep their own height
+  var IMG_W = 1500, MOBILE_W = 430, IMG_MAX_H = 16000;   // page screenshots keep their own height
   var MAIN_PAGES = ['Home', 'Collection', 'Product'];
   var TOKEN_KEY = 'portfolio-admin-token';
 
   var token = null;
   var site = null;          // contents of data/site.json
   var editing = null;       // index in site.projects being edited, or null for new
-  var draft = [];           // pages in the form: { label, fixed, image, upload: { base64, ext, dataUrl } }
+  var draft = [];           // pages in the form: { label, fixed, d: slot, m: slot }
   var justUploaded = {};    // image path -> preview, until GitHub Pages has published it
 
   /* ---------- Helpers ---------- */
@@ -120,7 +120,7 @@
     var out = [];
     data.projects.forEach(function (p) {
       if (p.image) out.push(p.image);
-      (p.pages || []).forEach(function (pg) { if (pg.image) out.push(pg.image); });
+      (p.pages || []).forEach(function (pg) { if (pg.image) out.push(pg.image); if (pg.mobile) out.push(pg.mobile); });
     });
     return out;
   }
@@ -135,9 +135,10 @@
   function slugOf(p) { return p.slug || slug(p.name); }
 
   function coverOf(p) {
-    var pages = (p.pages || []).filter(function (pg) { return pg.image; });
+    var pages = (p.pages || []).filter(function (pg) { return pg.image || pg.mobile; });
     var home = pages.filter(function (pg) { return /^home$/i.test(pg.label || ''); })[0];
-    return (home || pages[0] || {}).image || p.image || '';
+    var c = home || pages[0] || {};
+    return c.image || c.mobile || p.image || '';
   }
 
   /* Re-read the latest data, apply a change, and publish it in one commit. Resolves true on success. */
@@ -246,7 +247,7 @@
         '<button type="button" class="btn btn-danger btn-sm" data-delete>Delete</button>' +
       '</span>';
     li.querySelector('b').textContent = p.name;
-    var shown = (p.pages || []).filter(function (pg) { return pg.image; }).length;
+    var shown = (p.pages || []).filter(function (pg) { return pg.image || pg.mobile; }).length;
     li.querySelector('small').textContent = [p.category, p.location, shown + (shown === 1 ? ' page' : ' pages')].filter(Boolean).join(' · ');
     li.querySelector('[data-view]').href = 'store.html?s=' + encodeURIComponent(slugOf(p));
 
@@ -320,18 +321,37 @@
     return MAIN_PAGES.some(function (m) { return m.toLowerCase() === String(label || '').trim().toLowerCase(); });
   }
 
-  /* Home, Collection and Product always have a slot; other pages follow in their saved order */
+  /* Home, Collection and Product always have a slot; other pages follow in their saved order.
+     Each page has a desktop (d) and a mobile (m) screenshot: { image: saved path, upload: picked file } */
+  function slotOf(path) { return { image: path || '', upload: null }; }
+  function hasShot(slot) { return !!(slot.upload || slot.image); }
+  function srcOf(slot) {
+    return slot.upload ? slot.upload.dataUrl : (slot.image ? (justUploaded[slot.image] || encodeURI(slot.image)) : '');
+  }
+
   function buildDraft(p) {
     var pages = (p && p.pages) || [];
     if (p && !pages.length && p.image) pages = [{ label: 'Home', image: p.image }];
     var out = MAIN_PAGES.map(function (label) {
-      var found = pages.filter(function (pg) { return String(pg.label || '').toLowerCase() === label.toLowerCase(); })[0];
-      return { label: label, fixed: true, image: found ? found.image : '', upload: null };
+      var found = pages.filter(function (pg) { return String(pg.label || '').toLowerCase() === label.toLowerCase(); })[0] || {};
+      return { label: label, fixed: true, d: slotOf(found.image), m: slotOf(found.mobile) };
     });
     pages.forEach(function (pg) {
-      if (!isMain(pg.label)) out.push({ label: pg.label || '', fixed: false, image: pg.image || '', upload: null });
+      if (!isMain(pg.label)) out.push({ label: pg.label || '', fixed: false, d: slotOf(pg.image), m: slotOf(pg.mobile) });
     });
     return out;
+  }
+
+  function shotHtml(kind, slot) {
+    var src = srcOf(slot);
+    return '<div class="shot-slot shot-' + kind + '">' +
+      '<label class="page-shot" title="Click or drop a ' + (kind === 'd' ? 'desktop' : 'mobile') + ' screenshot">' +
+        '<input type="file" accept="image/*" data-kind="' + kind + '">' +
+        (src ? '<img alt="" data-src-kind="' + kind + '">' : '<span>' + (kind === 'd' ? '+ Desktop' : '+') + '</span>') +
+      '</label>' +
+      (src ? '<button type="button" class="slot-x" data-clear="' + kind + '" aria-label="Remove ' + (kind === 'd' ? 'desktop' : 'mobile') + ' screenshot">✕</button>' : '') +
+      '<small>' + (kind === 'd' ? 'Desktop' : 'Mobile') + '</small>' +
+    '</div>';
   }
 
   function renderPages() {
@@ -341,49 +361,51 @@
     draft.forEach(function (pg, i) {
       var li = document.createElement('li');
       li.className = 'page-row' + (pg.fixed ? ' page-main' : '');
-      var src = pg.upload ? pg.upload.dataUrl : (pg.image ? (justUploaded[pg.image] || encodeURI(pg.image)) : '');
       li.innerHTML =
-        '<label class="page-shot" title="Click or drop a screenshot">' +
-          '<input type="file" accept="image/*">' +
-          (src ? '<img alt="">' : '<span>+ Screenshot</span>') +
-        '</label>' +
+        shotHtml('d', pg.d) + shotHtml('m', pg.m) +
         '<div class="page-info">' +
           (pg.fixed ? '<b></b>' : '<input class="page-label" maxlength="30" placeholder="Page name, e.g. About">') +
-          '<small></small>' +
+          '<small class="page-status"></small>' +
         '</div>' +
         '<div class="page-actions">' +
           (pg.fixed ? '' :
             '<button type="button" class="icon-btn" data-page-move="-1" aria-label="Move up"' + (i === firstExtra ? ' disabled' : '') + '>↑</button>' +
-            '<button type="button" class="icon-btn" data-page-move="1" aria-label="Move down"' + (i === draft.length - 1 ? ' disabled' : '') + '>↓</button>') +
-          ((pg.fixed && !src) ? '' : '<button type="button" class="icon-btn icon-danger" data-page-remove aria-label="' + (pg.fixed ? 'Remove screenshot' : 'Remove page') + '">✕</button>') +
+            '<button type="button" class="icon-btn" data-page-move="1" aria-label="Move down"' + (i === draft.length - 1 ? ' disabled' : '') + '>↓</button>' +
+            '<button type="button" class="icon-btn icon-danger" data-page-remove aria-label="Remove page">✕</button>') +
         '</div>';
 
-      if (src) li.querySelector('img').src = src;
+      li.querySelectorAll('img[data-src-kind]').forEach(function (img) { img.src = srcOf(pg[img.getAttribute('data-src-kind')]); });
       if (pg.fixed) li.querySelector('b').textContent = pg.label;
       else {
         var input = li.querySelector('.page-label');
         input.value = pg.label;
         input.addEventListener('input', function () { pg.label = input.value; });
       }
-      li.querySelector('small').textContent = src ? (pg.upload ? 'New screenshot, uploads on save' : 'Shown on the website') : 'Hidden until a screenshot is added';
+      var parts = [];
+      if (hasShot(pg.d)) parts.push('desktop');
+      if (hasShot(pg.m)) parts.push('mobile');
+      li.querySelector('.page-status').textContent = parts.length
+        ? 'Shown on the website: ' + parts.join(' + ') + (pg.d.upload || pg.m.upload ? ' (uploads on save)' : '')
+        : 'Hidden until a screenshot is added';
 
-      var shot = li.querySelector('.page-shot');
-      var file = shot.querySelector('input');
-      file.addEventListener('change', function () { pickPage(pg, file.files[0]); });
-      ['dragenter', 'dragover'].forEach(function (t) {
-        shot.addEventListener(t, function (e) { e.preventDefault(); shot.classList.add('over'); });
+      li.querySelectorAll('.page-shot').forEach(function (shot) {
+        var file = shot.querySelector('input');
+        var kind = file.getAttribute('data-kind');
+        file.addEventListener('change', function () { pickPage(pg, kind, file.files[0]); });
+        ['dragenter', 'dragover'].forEach(function (t) {
+          shot.addEventListener(t, function (e) { e.preventDefault(); shot.classList.add('over'); });
+        });
+        ['dragleave', 'drop'].forEach(function (t) {
+          shot.addEventListener(t, function () { shot.classList.remove('over'); });
+        });
+        shot.addEventListener('drop', function (e) { e.preventDefault(); pickPage(pg, kind, e.dataTransfer.files[0]); });
       });
-      ['dragleave', 'drop'].forEach(function (t) {
-        shot.addEventListener(t, function () { shot.classList.remove('over'); });
+      li.querySelectorAll('[data-clear]').forEach(function (b) {
+        b.addEventListener('click', function () { pg[b.getAttribute('data-clear')] = slotOf(''); renderPages(); });
       });
-      shot.addEventListener('drop', function (e) { e.preventDefault(); pickPage(pg, e.dataTransfer.files[0]); });
 
       var remove = li.querySelector('[data-page-remove]');
-      if (remove) remove.addEventListener('click', function () {
-        if (pg.fixed) { pg.image = ''; pg.upload = null; }
-        else draft.splice(i, 1);
-        renderPages();
-      });
+      if (remove) remove.addEventListener('click', function () { draft.splice(i, 1); renderPages(); });
       li.querySelectorAll('[data-page-move]').forEach(function (b) {
         b.addEventListener('click', function () {
           var to = i + parseInt(b.getAttribute('data-page-move'), 10);
@@ -397,17 +419,17 @@
     });
   }
 
-  function pickPage(pg, file) {
+  function pickPage(pg, kind, file) {
     if (!file) return;
     showError('store', '');
-    processImage(file).then(function (out) {
-      pg.upload = out;
+    processImage(file, kind === 'm' ? MOBILE_W : IMG_W).then(function (out) {
+      pg[kind].upload = out;
       renderPages();
     }).catch(function (err) { showError('store', err.message); });
   }
 
   $('[data-add-page]').addEventListener('click', function () {
-    draft.push({ label: '', fixed: false, image: '', upload: null });
+    draft.push({ label: '', fixed: false, d: slotOf(''), m: slotOf('') });
     renderPages();
     var inputs = $all('.page-label');
     if (inputs.length) inputs[inputs.length - 1].focus();
@@ -418,8 +440,8 @@
   modal.addEventListener('click', function (e) { if (e.target === modal) closeForm(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) closeForm(); });
 
-  /* Screenshot: resize to 1500px wide and keep its own height (very long pages are cut at 6000px) */
-  function processImage(file) {
+  /* Screenshot: resize (desktop 1500px, mobile 430px wide) and keep its own height */
+  function processImage(file, maxW) {
     return new Promise(function (resolve, reject) {
       if (!/^image\//.test(file.type || '')) return reject(new Error('That file is not an image.'));
       var reader = new FileReader();
@@ -428,7 +450,7 @@
         var img = new Image();
         img.onerror = function () { reject(new Error('That file is not an image.')); };
         img.onload = function () {
-          var scale = Math.min(1, IMG_W / img.naturalWidth);
+          var scale = Math.min(1, (maxW || IMG_W) / img.naturalWidth);
           var w = Math.round(img.naturalWidth * scale);
           var h = Math.min(Math.round(img.naturalHeight * scale), IMG_MAX_H);
           var canvas = document.createElement('canvas');
@@ -470,7 +492,7 @@
     for (var i = 0; i < draft.length; i++) {
       var pg = draft[i];
       var label = String(pg.label || '').trim();
-      var has = pg.upload || pg.image;
+      var has = hasShot(pg.d) || hasShot(pg.m);
       if (!pg.fixed && has && !label) return showError('store', 'Please name every page you added a screenshot for.');
       if (has && label) {
         if (labels.indexOf(label.toLowerCase()) > -1) return showError('store', 'Two pages are called “' + label + '”. Please rename one.');
@@ -483,16 +505,22 @@
     var stamp = Date.now().toString(36);
     var files = [];
     var pages = [];
+    function save(slot, label, suffix) {
+      if (!slot.upload) return slot.image;
+      var path = 'assets/img/stores/' + storeSlug + '/' + slug(label) + suffix + '-' + stamp + '.' + slot.upload.ext;
+      files.push({ path: path, base64: slot.upload.base64 });
+      justUploaded[path] = slot.upload.dataUrl;
+      return path;
+    }
     draft.forEach(function (pg) {
       var label = String(pg.label || '').trim();
-      if (!label || !(pg.upload || pg.image)) return;
-      var image = pg.image;
-      if (pg.upload) {
-        image = 'assets/img/stores/' + storeSlug + '/' + slug(label) + '-' + stamp + '.' + pg.upload.ext;
-        files.push({ path: image, base64: pg.upload.base64 });
-        justUploaded[image] = pg.upload.dataUrl;
-      }
-      pages.push({ label: label, image: image });
+      if (!label || !(hasShot(pg.d) || hasShot(pg.m))) return;
+      var page = { label: label };
+      var desktop = save(pg.d, label, '');
+      var mobile = save(pg.m, label, '-mobile');
+      if (desktop) page.image = desktop;
+      if (mobile) page.mobile = mobile;
+      pages.push(page);
     });
 
     var project = {

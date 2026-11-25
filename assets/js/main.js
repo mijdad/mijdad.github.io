@@ -105,9 +105,10 @@
   }
 
   function coverOf(p) {
-    var pages = (p.pages || []).filter(function (pg) { return pg && pg.image; });
+    var pages = (p.pages || []).filter(function (pg) { return pg && (pg.image || pg.mobile); });
     var home = pages.filter(function (pg) { return /^home$/i.test(pg.label || ''); })[0];
-    return (home || pages[0] || {}).image || p.image || '';
+    var c = home || pages[0] || {};
+    return c.image || c.mobile || p.image || '';
   }
 
   function projectCard(p, i) {

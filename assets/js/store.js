@@ -16,7 +16,7 @@
   function pad(n) { return (n < 10 ? '0' : '') + n; }
 
   function orderPages(pages) {
-    var list = (pages || []).filter(function (pg) { return pg && pg.image; });
+    var list = (pages || []).filter(function (pg) { return pg && (pg.image || pg.mobile); });
     var rank = function (pg) {
       for (var i = 0; i < MAIN.length; i++) if (MAIN[i].test(pg.label || '')) return i;
       return MAIN.length;
@@ -81,77 +81,115 @@
 
   function viewer(p, pages) {
     var tabs = $('[data-page-tabs]');
+    var desk = $('[data-desktop-frame]');
+    var phone = $('[data-phone-frame]');
     var img = $('[data-frame-img]');
+    var phoneImg = $('[data-phone-img]');
+    var lb = $('[data-lightbox]');
+    var lbImg = $('[data-lb-img]');
+    var lbScroll = $('[data-lb-close-area]');
+    var toggle = $('[data-view-toggle]');
+
+    var hasDesktop = pages.some(function (pg) { return pg.image; });
+    var hasMobile = pages.some(function (pg) { return pg.mobile; });
+    var view = hasDesktop ? 'desktop' : 'mobile';
+    var list = [];      // pages shown in the current view
     var current = 0;
 
-    pages.forEach(function (pg, i) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.setAttribute('role', 'tab');
-      b.textContent = pg.label || 'Page ' + (i + 1);
-      b.addEventListener('click', function () { show(i); });
-      tabs.appendChild(b);
+    function keyOf(v) { return v === 'mobile' ? 'mobile' : 'image'; }
+    function srcOf(pg) { return pg[keyOf(view)]; }
+
+    // Warm the cache so switching is instant
+    pages.forEach(function (pg) {
+      [pg.image, pg.mobile].forEach(function (u) { if (u) { var im = new Image(); im.src = u; } });
     });
 
-    // Warm the cache so switching tabs is instant
-    pages.forEach(function (pg) { var im = new Image(); im.src = pg.image; });
+    function buildTabs(keepLabel) {
+      list = pages.filter(function (pg) { return srcOf(pg); });
+      tabs.innerHTML = '';
+      list.forEach(function (pg, i) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.textContent = pg.label || 'Page ' + (i + 1);
+        b.addEventListener('click', function () { show(i); });
+        tabs.appendChild(b);
+      });
+      var at = 0;
+      list.forEach(function (pg, i) { if (pg.label === keepLabel) at = i; });
+      show(at);
+    }
 
     function show(i) {
-      current = (i + pages.length) % pages.length;
-      var pg = pages[current];
-      img.src = pg.image;
-      img.alt = (pg.label || 'Page') + ' page of ' + p.name;
+      current = (i + list.length) % list.length;
+      var pg = list[current];
+      var src = srcOf(pg);
+      var alt = (pg.label || 'Page') + ' page of ' + p.name + (view === 'mobile' ? ' on mobile' : '');
+      desk.hidden = view !== 'desktop';
+      phone.hidden = view !== 'mobile';
+      if (view === 'desktop') { img.src = src; img.alt = alt; }
+      else { phoneImg.src = src; phoneImg.alt = alt; }
       $('[data-frame-url]').textContent = domain(p.url || '') + '  ·  ' + (pg.label || '');
       $('[data-frame-label]').textContent = pg.label || '';
-      $('[data-frame-pos]').textContent = pad(current + 1) + ' / ' + pad(pages.length);
+      $('[data-frame-pos]').textContent = pad(current + 1) + ' / ' + pad(list.length);
       Array.prototype.forEach.call(tabs.children, function (t, k) {
         t.setAttribute('aria-selected', k === current ? 'true' : 'false');
       });
-      var multi = pages.length > 1;
+      var multi = list.length > 1;
       $('[data-frame-prev]').hidden = !multi;
       $('[data-frame-next]').hidden = !multi;
+      if (!lb.hidden) { lbImg.src = src; lbImg.alt = alt; lbScroll.scrollTop = 0; }
+    }
+
+    function setView(v) {
+      var keep = list[current] && list[current].label;
+      view = v;
+      Array.prototype.forEach.call(toggle.querySelectorAll('[data-view]'), function (b) {
+        b.setAttribute('aria-pressed', b.getAttribute('data-view') === v ? 'true' : 'false');
+      });
+      buildTabs(keep);
+    }
+
+    if (hasDesktop && hasMobile) {
+      toggle.hidden = false;
+      Array.prototype.forEach.call(toggle.querySelectorAll('[data-view]'), function (b) {
+        b.addEventListener('click', function () { if (b.getAttribute('data-view') !== view) setView(b.getAttribute('data-view')); });
+      });
     }
 
     $('[data-frame-prev]').addEventListener('click', function () { show(current - 1); });
     $('[data-frame-next]').addEventListener('click', function () { show(current + 1); });
 
-    // Lightbox
-    var lb = $('[data-lightbox]');
-    var lbImg = $('[data-lb-img]');
+    // Full-page viewer
     function openLb() {
-      lbImg.src = pages[current].image;
-      lbImg.alt = img.alt;
+      var pg = list[current];
+      lb.classList.toggle('lb-mobile', view === 'mobile');
+      lbImg.src = srcOf(pg);
+      lbImg.alt = view === 'desktop' ? img.alt : phoneImg.alt;
       lb.hidden = false;
-      $('[data-lb-close-area]').scrollTop = 0;
+      lbScroll.scrollTop = 0;
       document.body.style.overflow = 'hidden';
       $('[data-lb-close]').focus();
     }
     function closeLb() {
       lb.hidden = true;
       document.body.style.overflow = '';
-      $('[data-frame-open]').focus();
+      (view === 'desktop' ? $('[data-frame-open]') : $('[data-phone-open]')).focus();
     }
     $('[data-frame-open]').addEventListener('click', openLb);
+    $('[data-phone-open]').addEventListener('click', openLb);
     $('[data-lb-close]').addEventListener('click', closeLb);
-    $('[data-lb-close-area]').addEventListener('click', function (e) { if (e.target === e.currentTarget) closeLb(); });
+    lbScroll.addEventListener('click', function (e) { if (e.target === e.currentTarget) closeLb(); });
 
     document.addEventListener('keydown', function (e) {
-      if (!lb.hidden) {
-        if (e.key === 'Escape') closeLb();
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-          show(current + (e.key === 'ArrowLeft' ? -1 : 1));
-          lbImg.src = pages[current].image;
-          $('[data-lb-close-area]').scrollTop = 0;
-        }
-        return;
-      }
+      if (!lb.hidden && e.key === 'Escape') return closeLb();
       var tag = (document.activeElement && document.activeElement.tagName) || '';
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
       if (e.key === 'ArrowLeft') show(current - 1);
       if (e.key === 'ArrowRight') show(current + 1);
     });
 
-    show(0);
+    setView(view);
   }
 
   fetch('data/site.json', { cache: 'no-cache' })

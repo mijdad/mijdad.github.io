@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:opsz,wght@14..32,400..900&display=swap">
-  <link rel="stylesheet" href="assets/css/style.css?v=9">
+  <link rel="stylesheet" href="assets/css/style.css?v=10">
 </head>
 <body>
 
@@ -50,15 +50,29 @@
   <main>
     <!-- ========== Pages viewer (from data/site.json) ========== -->
     <section class="section wrap store-view" aria-label="Store pages" data-store-view hidden>
-      <div class="page-tabs" role="tablist" aria-label="Pages" data-page-tabs></div>
+      <div class="view-bar">
+        <div class="page-tabs" role="tablist" aria-label="Pages" data-page-tabs></div>
+        <div class="view-toggle" role="group" aria-label="Device" data-view-toggle hidden>
+          <button type="button" data-view="desktop"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Desktop</button>
+          <button type="button" data-view="mobile"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>Mobile</button>
+        </div>
+      </div>
 
-      <figure class="frame">
+      <figure class="frame" data-desktop-frame>
         <div class="shot-bar"><i></i><i></i><i></i><span data-frame-url></span></div>
         <button class="frame-img" type="button" data-frame-open aria-label="View the full page">
           <img data-frame-img alt="" width="1500" height="722">
           <span class="frame-zoom">Click to view the full page ↓</span>
         </button>
       </figure>
+
+      <figure class="phone" data-phone-frame hidden>
+        <button class="phone-screen" type="button" data-phone-open aria-label="View the full mobile page">
+          <img data-phone-img alt="" width="430" height="932">
+        </button>
+        <span class="frame-zoom phone-zoom">Tap to view the full page ↓</span>
+      </figure>
+
       <div class="frame-caption">
         <b data-frame-label></b>
         <div class="frame-ctrl">
@@ -95,7 +109,7 @@
     <div class="lb-scroll" data-lb-close-area><img data-lb-img alt=""></div>
   </div>
 
-  <script src="assets/js/main.js?v=9" defer></script>
-  <script src="assets/js/store.js?v=9" defer></script>
+  <script src="assets/js/main.js?v=10" defer></script>
+  <script src="assets/js/store.js?v=10" defer></script>
 </body>
 </html>

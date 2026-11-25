@@ -27,7 +27,9 @@ The token is saved only in that browser.
 
 - **Add store:** fill in the form, then add desktop screenshots in **Store pages**. Home, Collection and Product have fixed slots; **+ Add page** adds any other page (About, Contact…). Press **Publish**.
 - **Location:** Country and State, shown as `India · Kerala` or `UAE · Dubai`.
-- **Pages:** a page without a screenshot is hidden on the website. Screenshots are resized to 1500px wide and keep their own height.
+- **Pages:** each page has a **Desktop** and a **Mobile** slot. A page without any screenshot is hidden on the website. Desktop screenshots are resized to 1500px wide, mobile to 430px; both keep their own height.
+- **Desktop / Mobile switch:** appears on a store page once it has at least one mobile screenshot.
+- **Taking full-page screenshots:** in Chrome press F12, then Ctrl+Shift+M for phone view (pick e.g. iPhone 12 Pro), then Ctrl+Shift+P → *Capture full size screenshot*. Press Ctrl+Shift+M again for desktop.
 - **View / Edit / Delete / ↑ ↓:** open the store page, change a store, remove it (its screenshots are removed too) or change the order.
 - **Mentor switch:** shows or hides the TBM Ecommerce Academy line.
 
@@ -49,7 +51,7 @@ Stores are listed oldest first; the **last** one shows first on the site.
   "description": "One short sentence about the store.",
   "color": "#E8DED2",
   "pages": [
-    { "label": "Home", "image": "assets/img/stores/brand-name/home.webp" },
+    { "label": "Home", "image": "assets/img/stores/brand-name/home.webp", "mobile": "assets/img/stores/brand-name/home-mobile.webp" },
     { "label": "Collection", "image": "assets/img/stores/brand-name/collection.webp" },
     { "label": "Product", "image": "assets/img/stores/brand-name/product.webp" },
     { "label": "About", "image": "assets/img/stores/brand-name/about.webp" }
