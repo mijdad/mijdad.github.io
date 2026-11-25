@@ -1,5 +1,6 @@
 /* Muhammed Mijdad portfolio
    - Loads projects from data/site.json (newest = last in the list)
+   - Cards link to store.html?s=<slug>
    - Order summary and pre-written WhatsApp messages
    - Scroll-in animations */
 (function () {
@@ -99,12 +100,24 @@
   }
 
   /* ---------- Projects ---------- */
+  function slugOf(p) {
+    return p.slug || String(p.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  function coverOf(p) {
+    var pages = (p.pages || []).filter(function (pg) { return pg && pg.image; });
+    var home = pages.filter(function (pg) { return /^home$/i.test(pg.label || ''); })[0];
+    return (home || pages[0] || {}).image || p.image || '';
+  }
+
   function projectCard(p, i) {
-    var shot = el('div', { class: 'shot' }, [
+    var href = 'store.html?s=' + encodeURIComponent(slugOf(p));
+    var cover = coverOf(p);
+    var shot = el('a', { class: 'shot', href: href, 'aria-label': 'Open ' + p.name }, [
       el('div', { class: 'shot-bar' }, [el('i'), el('i'), el('i'), el('span', { text: domain(p.url) })])
     ]);
-    if (p.image) {
-      shot.appendChild(el('img', { src: p.image, alt: 'Homepage of ' + p.name, loading: 'lazy', width: '1200', height: '750' }));
+    if (cover) {
+      shot.appendChild(el('img', { src: cover, alt: 'Homepage of ' + p.name, loading: 'lazy', width: '1500', height: '722' }));
     } else {
       var placeholder = el('div', { class: 'ph', text: p.name });
       placeholder.style.background = p.color || '#D9D4C5';
@@ -126,10 +139,10 @@
       location
     ]);
 
-    var visit = el('a', { class: 'btn btn-dark', href: p.url, target: '_blank', rel: 'noopener', 'aria-label': 'View ' + p.name + ' live store (opens in a new tab)' });
-    visit.innerHTML = 'View live store <span class="arr">↗</span>';
+    var view = el('a', { class: 'btn btn-dark', href: href, 'aria-label': 'View ' + p.name + ' store pages' });
+    view.innerHTML = 'View store <span class="arr">→</span>';
 
-    return el('article', { class: 'card reveal' }, [shot, body, visit]);
+    return el('article', { class: 'card reveal' }, [shot, body, view]);
   }
 
   function renderProjects(data) {

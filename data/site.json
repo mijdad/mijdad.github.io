@@ -2,40 +2,124 @@
   "showMentor": true,
   "projects": [
     {
+      "slug": "jersey-vault",
       "name": "Jersey Vault",
       "url": "https://jerseyvault.in/",
       "category": "Football jerseys",
-      "location": "Malappuram, Kerala",
+      "location": "India · Kerala",
       "description": "Retro, special-edition and World Cup kits for football fans across India.",
-      "image": "assets/img/work-jerseyvault.webp",
-      "color": "#151515"
+      "color": "#151515",
+      "pages": [
+        {
+          "label": "Home",
+          "image": "assets/img/stores/jersey-vault/home.webp"
+        },
+        {
+          "label": "Collection",
+          "image": "assets/img/stores/jersey-vault/collection.webp"
+        },
+        {
+          "label": "Product",
+          "image": "assets/img/stores/jersey-vault/product.webp"
+        }
+      ]
     },
     {
+      "slug": "myyellow",
       "name": "MyYellow",
       "url": "https://myyellowclothing.com/",
       "category": "Women's casual wear",
-      "location": "Malappuram, Kerala",
+      "location": "India · Kerala",
       "description": "Expressive hoodies, tees and sweatshirts designed for women.",
-      "image": "assets/img/work-myyellow.webp",
-      "color": "#F6D84A"
+      "color": "#F6D84A",
+      "pages": [
+        {
+          "label": "Home",
+          "image": "assets/img/stores/myyellow/home.webp"
+        },
+        {
+          "label": "Collection",
+          "image": "assets/img/stores/myyellow/collection.webp"
+        },
+        {
+          "label": "Product",
+          "image": "assets/img/stores/myyellow/product.webp"
+        },
+        {
+          "label": "About",
+          "image": "assets/img/stores/myyellow/about.webp"
+        },
+        {
+          "label": "Contact",
+          "image": "assets/img/stores/myyellow/contact.webp"
+        }
+      ]
     },
     {
+      "slug": "red-ribbon-cakes",
       "name": "Red Ribbon Cakes",
       "url": "https://redribboncakes.com/",
       "category": "Bakery & gifting",
-      "location": "Dubai, UAE",
+      "location": "UAE · Dubai",
       "description": "An online cake shop with same-day delivery, occasion collections and custom photo cakes.",
-      "image": "assets/img/work-redribbon.webp",
-      "color": "#F6E3E1"
+      "color": "#F6E3E1",
+      "pages": [
+        {
+          "label": "Home",
+          "image": "assets/img/stores/red-ribbon-cakes/home.webp"
+        },
+        {
+          "label": "Collection",
+          "image": "assets/img/stores/red-ribbon-cakes/collection.webp"
+        },
+        {
+          "label": "Product",
+          "image": "assets/img/stores/red-ribbon-cakes/product.webp"
+        },
+        {
+          "label": "Create your own cake",
+          "image": "assets/img/stores/red-ribbon-cakes/create-your-own-cake.webp"
+        },
+        {
+          "label": "About",
+          "image": "assets/img/stores/red-ribbon-cakes/about.webp"
+        },
+        {
+          "label": "Contact",
+          "image": "assets/img/stores/red-ribbon-cakes/contact.webp"
+        }
+      ]
     },
     {
+      "slug": "hush-n-hem",
       "name": "Hush N Hem",
       "url": "https://hushnhem.com/",
       "category": "Baby & newborn fashion",
-      "location": "Calicut, Kerala",
+      "location": "India · Kerala",
       "description": "A soft, minimal store for baby clothing, accessories and custom gift hampers.",
-      "image": "assets/img/work-hush.webp",
-      "color": "#E8DED2"
+      "color": "#E8DED2",
+      "pages": [
+        {
+          "label": "Home",
+          "image": "assets/img/stores/hush-n-hem/home.webp"
+        },
+        {
+          "label": "Collection",
+          "image": "assets/img/stores/hush-n-hem/collection.webp"
+        },
+        {
+          "label": "Product",
+          "image": "assets/img/stores/hush-n-hem/product.webp"
+        },
+        {
+          "label": "About",
+          "image": "assets/img/stores/hush-n-hem/about.webp"
+        },
+        {
+          "label": "Contact",
+          "image": "assets/img/stores/hush-n-hem/contact.webp"
+        }
+      ]
     }
   ]
 }

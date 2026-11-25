@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:opsz,wght@14..32,400..900&display=swap">
-  <link rel="stylesheet" href="assets/css/admin.css?v=1">
+  <link rel="stylesheet" href="assets/css/admin.css?v=2">
 </head>
 <body>
 
@@ -88,14 +88,18 @@
             <span>Store link <em>*</em></span>
             <input name="url" type="url" required placeholder="https://brand.com/">
           </label>
+          <label class="field">
+            <span>What they sell</span>
+            <input name="category" maxlength="40" placeholder="e.g. Anti-tarnish jewellery">
+          </label>
           <div class="grid2">
             <label class="field">
-              <span>What they sell</span>
-              <input name="category" maxlength="40" placeholder="e.g. Anti-tarnish jewellery">
+              <span>Country</span>
+              <input name="country" maxlength="30" placeholder="e.g. India or UAE">
             </label>
             <label class="field">
-              <span>City, State</span>
-              <input name="location" maxlength="40" placeholder="e.g. Kochi, Kerala">
+              <span>State / Emirate</span>
+              <input name="state" maxlength="30" placeholder="e.g. Kerala or Dubai">
             </label>
           </div>
           <label class="field">
@@ -104,17 +108,14 @@
           </label>
 
           <div class="field">
-            <span>Homepage screenshot</span>
-            <label class="drop" data-drop>
-              <input type="file" name="image" accept="image/*">
-              <img data-preview alt="" hidden>
-              <span class="drop-text" data-drop-text>Click or drop a desktop screenshot of the store's homepage</span>
-            </label>
-            <small class="muted">Resized automatically to 1200 × 750. If you skip it, the card shows the store name on a colour tile.</small>
+            <span>Store pages</span>
+            <small class="muted">Desktop screenshots. Home, Collection and Product show first; add any other page below. A page without a screenshot stays hidden on the website.</small>
+            <ul class="pages" data-pages></ul>
+            <button type="button" class="btn btn-ghost btn-sm add-page" data-add-page>+ Add page</button>
           </div>
 
           <label class="field field-inline">
-            <span>Tile colour (used only without a screenshot)</span>
+            <span>Tile colour (used only without a Home screenshot)</span>
             <input name="color" type="color" value="#E8DED2">
           </label>
 
@@ -131,6 +132,6 @@
     <div class="toast" data-toast role="status" aria-live="polite" hidden></div>
   </main>
 
-  <script src="assets/js/admin.js?v=1" defer></script>
+  <script src="assets/js/admin.js?v=2" defer></script>
 </body>
 </html>

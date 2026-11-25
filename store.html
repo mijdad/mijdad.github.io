@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>document.documentElement.className += " js"</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Store — Muhammed Mijdad</title>
+  <meta name="description" content="A Shopify store built by Muhammed Mijdad, page by page.">
+  <meta name="theme-color" content="#0E2A20">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+
+  <!-- Link preview (WhatsApp, LinkedIn, Instagram) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Store work — Muhammed Mijdad">
+  <meta property="og:description" content="A Shopify store I built, page by page.">
+  <meta property="og:image" content="https://mijdad.github.io/assets/img/og-banner.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:opsz,wght@14..32,400..900&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css?v=7">
+</head>
+<body>
+
+  <!-- ========== Header ========== -->
+  <header class="work-head">
+    <nav class="nav wrap" aria-label="Main">
+      <a class="brand" href="index.html">MUHAMMED MIJDAD</a>
+      <div class="nav-links">
+        <a href="work.html">← All work</a>
+        <a class="btn btn-lime btn-pill" data-wa href="https://wa.me/919539399658" target="_blank" rel="noopener">Chat on WhatsApp →</a>
+      </div>
+    </nav>
+    <div class="store-hero wrap" data-store-hero>
+      <div class="store-intro">
+        <p class="kicker" data-store-cat>Store</p>
+        <h1 data-store-name>&nbsp;</h1>
+        <p class="store-desc" data-store-desc></p>
+        <div class="store-meta">
+          <span class="loc" data-store-loc hidden></span>
+          <span data-store-count></span>
+        </div>
+      </div>
+      <a class="btn btn-lime store-visit" data-store-visit href="#" target="_blank" rel="noopener" hidden>Visit live website <span class="arr">↗</span></a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ========== Pages viewer (from data/site.json) ========== -->
+    <section class="section wrap store-view" aria-label="Store pages" data-store-view hidden>
+      <div class="page-tabs" role="tablist" aria-label="Pages" data-page-tabs></div>
+
+      <figure class="frame">
+        <div class="shot-bar"><i></i><i></i><i></i><span data-frame-url></span></div>
+        <button class="frame-img" type="button" data-frame-open aria-label="Open full size">
+          <img data-frame-img alt="" width="1500" height="722">
+          <span class="frame-zoom">Click to enlarge</span>
+        </button>
+      </figure>
+      <div class="frame-caption">
+        <b data-frame-label></b>
+        <div class="frame-ctrl">
+          <span data-frame-pos></span>
+          <button class="frame-nav" type="button" data-frame-prev aria-label="Previous page">←</button>
+          <button class="frame-nav" type="button" data-frame-next aria-label="Next page">→</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap store-missing" data-store-missing hidden>
+      <h2>Store not found.</h2>
+      <p>This store may have been removed. See everything else I've built.</p>
+      <a class="btn btn-dark" href="work.html">View all work <span class="arr">→</span></a>
+    </section>
+
+    <div class="wrap">
+      <div class="store-next" data-store-next hidden></div>
+      <div class="cta-band reveal">
+        <h2>Your brand could be next.</h2>
+        <a class="btn btn-dark" data-wa href="https://wa.me/919539399658" target="_blank" rel="noopener">Chat on WhatsApp <span class="arr">→</span></a>
+      </div>
+      <footer class="plain-foot">
+        <span>© <span data-year>2026</span> Muhammed Mijdad</span>
+        <span>Shopify developer · Performance marketer</span>
+      </footer>
+    </div>
+  </main>
+
+  <!-- ========== Full-size viewer ========== -->
+  <div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="Page screenshot">
+    <button class="lb-close" type="button" data-lb-close aria-label="Close">✕</button>
+    <div class="lb-scroll" data-lb-close-area><img data-lb-img alt=""></div>
+  </div>
+
+  <script src="assets/js/main.js?v=7" defer></script>
+  <script src="assets/js/store.js?v=7" defer></script>
+</body>
+</html>

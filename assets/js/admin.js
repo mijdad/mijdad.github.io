@@ -8,13 +8,14 @@
   var BRANCH = 'main';
   var API = 'https://api.github.com/repos/' + REPO;
   var DATA_PATH = 'data/site.json';
-  var IMG_W = 1200, IMG_H = 750;
+  var IMG_W = 1500, IMG_MAX_H = 6000;   // page screenshots keep their own height
+  var MAIN_PAGES = ['Home', 'Collection', 'Product'];
   var TOKEN_KEY = 'portfolio-admin-token';
 
   var token = null;
   var site = null;          // contents of data/site.json
   var editing = null;       // index in site.projects being edited, or null for new
-  var newImage = null;      // { base64, ext } of a picked screenshot
+  var draft = [];           // pages in the form: { label, fixed, image, upload: { base64, ext, dataUrl } }
   var justUploaded = {};    // image path -> preview, until GitHub Pages has published it
 
   /* ---------- Helpers ---------- */
@@ -115,11 +116,28 @@
   }
 
   /* Screenshots we uploaded that no store uses any more */
-  function unusedImages(before, after) {
-    var still = after.projects.map(function (p) { return p.image; });
-    return before.projects.map(function (p) { return p.image; }).filter(function (img) {
-      return img && /^assets\/img\/work-/.test(img) && still.indexOf(img) < 0;
+  function imagesOf(data) {
+    var out = [];
+    data.projects.forEach(function (p) {
+      if (p.image) out.push(p.image);
+      (p.pages || []).forEach(function (pg) { if (pg.image) out.push(pg.image); });
     });
+    return out;
+  }
+
+  function unusedImages(before, after) {
+    var still = imagesOf(after);
+    return imagesOf(before).filter(function (img, i, all) {
+      return /^assets\/img\/(work-|stores\/)/.test(img) && still.indexOf(img) < 0 && all.indexOf(img) === i;
+    });
+  }
+
+  function slugOf(p) { return p.slug || slug(p.name); }
+
+  function coverOf(p) {
+    var pages = (p.pages || []).filter(function (pg) { return pg.image; });
+    var home = pages.filter(function (pg) { return /^home$/i.test(pg.label || ''); })[0];
+    return (home || pages[0] || {}).image || p.image || '';
   }
 
   /* Re-read the latest data, apply a change, and publish it in one commit. Resolves true on success. */
@@ -212,8 +230,9 @@
   function storeRow(p, index, pos, total) {
     var li = document.createElement('li');
     li.className = 'store';
-    var thumb = p.image
-      ? '<img src="' + (justUploaded[p.image] || encodeURI(p.image)) + '" alt="">'
+    var cover = coverOf(p);
+    var thumb = cover
+      ? '<img src="' + (justUploaded[cover] || encodeURI(cover)) + '" alt="">'
       : '<span class="thumb-ph" style="background:' + (p.color || '#D9D4C5') + '"></span>';
     li.innerHTML =
       '<span class="pos">' + String(pos + 1).padStart(2, '0') + '</span>' +
@@ -222,11 +241,14 @@
       '<span class="actions">' +
         '<button type="button" class="icon-btn" data-move="up" aria-label="Move up"' + (pos === 0 ? ' disabled' : '') + '>↑</button>' +
         '<button type="button" class="icon-btn" data-move="down" aria-label="Move down"' + (pos === total - 1 ? ' disabled' : '') + '>↓</button>' +
+        '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" data-view>View</a>' +
         '<button type="button" class="btn btn-ghost btn-sm" data-edit>Edit</button>' +
         '<button type="button" class="btn btn-danger btn-sm" data-delete>Delete</button>' +
       '</span>';
     li.querySelector('b').textContent = p.name;
-    li.querySelector('small').textContent = [p.category, p.location, domain(p.url)].filter(Boolean).join(' · ');
+    var shown = (p.pages || []).filter(function (pg) { return pg.image; }).length;
+    li.querySelector('small').textContent = [p.category, p.location, shown + (shown === 1 ? ' page' : ' pages')].filter(Boolean).join(' · ');
+    li.querySelector('[data-view]').href = 'store.html?s=' + encodeURIComponent(slugOf(p));
 
     li.querySelector('[data-edit]').addEventListener('click', function () { openForm(index); });
     li.querySelector('[data-delete]').addEventListener('click', function () {
@@ -263,53 +285,159 @@
 
   function openForm(index) {
     editing = typeof index === 'number' ? index : null;
-    newImage = null;
     form.reset();
     showError('store', '');
     var p = editing === null ? null : site.projects[editing];
     $('[data-form-title]').textContent = p ? 'Edit ' + p.name : 'Add store';
     $('[data-submit]').textContent = p ? 'Save changes' : 'Publish';
     if (p) {
-      ['name', 'url', 'category', 'location', 'description'].forEach(function (k) { form[k].value = p[k] || ''; });
+      ['name', 'url', 'category', 'description'].forEach(function (k) { form[k].value = p[k] || ''; });
+      var loc = splitLocation(p.location);
+      form.country.value = loc[0];
+      form.state.value = loc[1];
       form.color.value = p.color || '#E8DED2';
     }
-    setPreview(p && p.image ? p.image : null);
+    draft = buildDraft(p);
+    renderPages();
     modal.hidden = false;
     form.name.focus();
   }
 
   function closeForm() { modal.hidden = true; }
 
-  function setPreview(src) {
-    var img = $('[data-preview]');
-    img.hidden = !src;
-    if (src) img.src = src;
-    $('[data-drop-text]').textContent = src ? 'Click or drop to replace the screenshot' : 'Click or drop a desktop screenshot of the store’s homepage';
+  /* "India · Kerala" -> ["India", "Kerala"]; older "Kochi, Kerala" -> ["", "Kochi, Kerala"] */
+  function splitLocation(text) {
+    text = String(text || '');
+    var at = text.indexOf(' · ');
+    return at > -1 ? [text.slice(0, at).trim(), text.slice(at + 3).trim()] : ['', text.trim()];
   }
+
+  function joinLocation(country, state) {
+    return [country.trim(), state.trim()].filter(Boolean).join(' · ');
+  }
+
+  function isMain(label) {
+    return MAIN_PAGES.some(function (m) { return m.toLowerCase() === String(label || '').trim().toLowerCase(); });
+  }
+
+  /* Home, Collection and Product always have a slot; other pages follow in their saved order */
+  function buildDraft(p) {
+    var pages = (p && p.pages) || [];
+    if (p && !pages.length && p.image) pages = [{ label: 'Home', image: p.image }];
+    var out = MAIN_PAGES.map(function (label) {
+      var found = pages.filter(function (pg) { return String(pg.label || '').toLowerCase() === label.toLowerCase(); })[0];
+      return { label: label, fixed: true, image: found ? found.image : '', upload: null };
+    });
+    pages.forEach(function (pg) {
+      if (!isMain(pg.label)) out.push({ label: pg.label || '', fixed: false, image: pg.image || '', upload: null });
+    });
+    return out;
+  }
+
+  function renderPages() {
+    var list = $('[data-pages]');
+    list.innerHTML = '';
+    var firstExtra = MAIN_PAGES.length;
+    draft.forEach(function (pg, i) {
+      var li = document.createElement('li');
+      li.className = 'page-row' + (pg.fixed ? ' page-main' : '');
+      var src = pg.upload ? pg.upload.dataUrl : (pg.image ? (justUploaded[pg.image] || encodeURI(pg.image)) : '');
+      li.innerHTML =
+        '<label class="page-shot" title="Click or drop a screenshot">' +
+          '<input type="file" accept="image/*">' +
+          (src ? '<img alt="">' : '<span>+ Screenshot</span>') +
+        '</label>' +
+        '<div class="page-info">' +
+          (pg.fixed ? '<b></b>' : '<input class="page-label" maxlength="30" placeholder="Page name, e.g. About">') +
+          '<small></small>' +
+        '</div>' +
+        '<div class="page-actions">' +
+          (pg.fixed ? '' :
+            '<button type="button" class="icon-btn" data-page-move="-1" aria-label="Move up"' + (i === firstExtra ? ' disabled' : '') + '>↑</button>' +
+            '<button type="button" class="icon-btn" data-page-move="1" aria-label="Move down"' + (i === draft.length - 1 ? ' disabled' : '') + '>↓</button>') +
+          ((pg.fixed && !src) ? '' : '<button type="button" class="icon-btn icon-danger" data-page-remove aria-label="' + (pg.fixed ? 'Remove screenshot' : 'Remove page') + '">✕</button>') +
+        '</div>';
+
+      if (src) li.querySelector('img').src = src;
+      if (pg.fixed) li.querySelector('b').textContent = pg.label;
+      else {
+        var input = li.querySelector('.page-label');
+        input.value = pg.label;
+        input.addEventListener('input', function () { pg.label = input.value; });
+      }
+      li.querySelector('small').textContent = src ? (pg.upload ? 'New screenshot, uploads on save' : 'Shown on the website') : 'Hidden until a screenshot is added';
+
+      var shot = li.querySelector('.page-shot');
+      var file = shot.querySelector('input');
+      file.addEventListener('change', function () { pickPage(pg, file.files[0]); });
+      ['dragenter', 'dragover'].forEach(function (t) {
+        shot.addEventListener(t, function (e) { e.preventDefault(); shot.classList.add('over'); });
+      });
+      ['dragleave', 'drop'].forEach(function (t) {
+        shot.addEventListener(t, function () { shot.classList.remove('over'); });
+      });
+      shot.addEventListener('drop', function (e) { e.preventDefault(); pickPage(pg, e.dataTransfer.files[0]); });
+
+      var remove = li.querySelector('[data-page-remove]');
+      if (remove) remove.addEventListener('click', function () {
+        if (pg.fixed) { pg.image = ''; pg.upload = null; }
+        else draft.splice(i, 1);
+        renderPages();
+      });
+      li.querySelectorAll('[data-page-move]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var to = i + parseInt(b.getAttribute('data-page-move'), 10);
+          if (to < firstExtra || to >= draft.length) return;
+          var item = draft.splice(i, 1)[0];
+          draft.splice(to, 0, item);
+          renderPages();
+        });
+      });
+      list.appendChild(li);
+    });
+  }
+
+  function pickPage(pg, file) {
+    if (!file) return;
+    showError('store', '');
+    processImage(file).then(function (out) {
+      pg.upload = out;
+      renderPages();
+    }).catch(function (err) { showError('store', err.message); });
+  }
+
+  $('[data-add-page]').addEventListener('click', function () {
+    draft.push({ label: '', fixed: false, image: '', upload: null });
+    renderPages();
+    var inputs = $all('.page-label');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  });
 
   $('[data-action="new"]').addEventListener('click', function () { openForm(null); });
   $all('[data-action="close"]').forEach(function (b) { b.addEventListener('click', closeForm); });
   modal.addEventListener('click', function (e) { if (e.target === modal) closeForm(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) closeForm(); });
 
-  /* Screenshot: crop the top of the page to 16:10 and resize to 1200 × 750 */
+  /* Screenshot: resize to 1500px wide and keep its own height (very long pages are cut at 6000px) */
   function processImage(file) {
     return new Promise(function (resolve, reject) {
+      if (!/^image\//.test(file.type || '')) return reject(new Error('That file is not an image.'));
       var reader = new FileReader();
       reader.onerror = reject;
       reader.onload = function () {
         var img = new Image();
         img.onerror = function () { reject(new Error('That file is not an image.')); };
         img.onload = function () {
-          var scale = IMG_W / img.naturalWidth;
-          var cropH = Math.min(img.naturalHeight, IMG_H / scale);
+          var scale = Math.min(1, IMG_W / img.naturalWidth);
+          var w = Math.round(img.naturalWidth * scale);
+          var h = Math.min(Math.round(img.naturalHeight * scale), IMG_MAX_H);
           var canvas = document.createElement('canvas');
-          canvas.width = IMG_W;
-          canvas.height = IMG_H;
+          canvas.width = w;
+          canvas.height = h;
           var ctx = canvas.getContext('2d');
           ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, IMG_W, IMG_H);
-          ctx.drawImage(img, 0, 0, img.naturalWidth, cropH, 0, 0, IMG_W, cropH * scale);
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, img.naturalWidth, h / scale, 0, 0, w, h);
           var webp = canvas.toDataURL('image/webp', 0.82);
           var isWebp = webp.indexOf('data:image/webp') === 0;
           var url = isWebp ? webp : canvas.toDataURL('image/jpeg', 0.85);
@@ -321,70 +449,74 @@
     });
   }
 
-  function pickFile(file) {
-    if (!file) return;
-    processImage(file).then(function (out) {
-      newImage = out;
-      setPreview(out.dataUrl);
-    }).catch(function (err) { showError('store', err.message); });
+  function uniqueSlug(name, original) {
+    if (original && original.slug) return original.slug;
+    var base = slug(name), out = base, n = 2;
+    var taken = site.projects.filter(function (x) { return x !== original; }).map(slugOf);
+    while (taken.indexOf(out) > -1) out = base + '-' + n++;
+    return out;
   }
-
-  form.image.addEventListener('change', function () { pickFile(form.image.files[0]); });
-  var drop = $('[data-drop]');
-  ['dragenter', 'dragover'].forEach(function (t) {
-    drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); });
-  });
-  ['dragleave', 'drop'].forEach(function (t) {
-    drop.addEventListener(t, function () { drop.classList.remove('over'); });
-  });
-  drop.addEventListener('drop', function (e) {
-    e.preventDefault();
-    pickFile(e.dataTransfer.files[0]);
-  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     showError('store', '');
     var url = form.url.value.trim();
     if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
-    var data = {
-      name: form.name.value.trim(),
-      url: url,
-      category: form.category.value.trim(),
-      location: form.location.value.trim(),
-      description: form.description.value.trim(),
-      color: form.color.value
-    };
-    if (!data.name) return showError('store', 'Please add the store name.');
-    try { new URL(data.url); } catch (err) { return showError('store', 'Please add a valid store link, like https://brand.com/'); }
+    var name = form.name.value.trim();
+    if (!name) return showError('store', 'Please add the store name.');
+    try { new URL(url); } catch (err) { return showError('store', 'Please add a valid store link, like https://brand.com/'); }
+
+    var labels = [];
+    for (var i = 0; i < draft.length; i++) {
+      var pg = draft[i];
+      var label = String(pg.label || '').trim();
+      var has = pg.upload || pg.image;
+      if (!pg.fixed && has && !label) return showError('store', 'Please name every page you added a screenshot for.');
+      if (has && label) {
+        if (labels.indexOf(label.toLowerCase()) > -1) return showError('store', 'Two pages are called “' + label + '”. Please rename one.');
+        labels.push(label.toLowerCase());
+      }
+    }
 
     var original = editing === null ? null : site.projects[editing];
+    var storeSlug = uniqueSlug(name, original);
+    var stamp = Date.now().toString(36);
     var files = [];
-    if (newImage) {
-      var path = 'assets/img/work-' + slug(data.name) + '-' + Date.now().toString(36) + '.' + newImage.ext;
-      files.push({ path: path, base64: newImage.base64 });
-      justUploaded[path] = newImage.dataUrl;
-      data.image = path;
-    } else if (original && original.image) {
-      data.image = original.image;
-    }
+    var pages = [];
+    draft.forEach(function (pg) {
+      var label = String(pg.label || '').trim();
+      if (!label || !(pg.upload || pg.image)) return;
+      var image = pg.image;
+      if (pg.upload) {
+        image = 'assets/img/stores/' + storeSlug + '/' + slug(label) + '-' + stamp + '.' + pg.upload.ext;
+        files.push({ path: image, base64: pg.upload.base64 });
+        justUploaded[image] = pg.upload.dataUrl;
+      }
+      pages.push({ label: label, image: image });
+    });
+
+    var project = {
+      slug: storeSlug,
+      name: name,
+      url: url,
+      category: form.category.value.trim(),
+      location: joinLocation(form.country.value, form.state.value),
+      description: form.description.value.trim(),
+      color: form.color.value,
+      pages: pages
+    };
 
     var button = $('[data-submit]');
     button.disabled = true;
     button.textContent = 'Publishing…';
     publish(function (s) {
-      var project = {
-        name: data.name, url: data.url, category: data.category, location: data.location,
-        description: data.description, image: data.image || '', color: data.color
-      };
-      if (!project.image) delete project.image;
       if (original) {
         var at = s.projects.findIndex(function (x) { return x.url === original.url && x.name === original.name; });
         if (at > -1) s.projects[at] = project; else s.projects.push(project);
       } else {
         s.projects.push(project);
       }
-    }, (original ? 'Update ' + data.name + ' in portfolio' : 'Add ' + data.name + ' to portfolio'), files).then(function (ok) {
+    }, (original ? 'Update ' + name + ' in portfolio' : 'Add ' + name + ' to portfolio'), files).then(function (ok) {
       button.disabled = false;
       button.textContent = original ? 'Save changes' : 'Publish';
       if (ok) closeForm();
