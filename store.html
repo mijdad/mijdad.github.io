@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:opsz,wght@14..32,400..900&display=swap">
-  <link rel="stylesheet" href="assets/css/style.css?v=7">
+  <link rel="stylesheet" href="assets/css/style.css?v=8">
 </head>
 <body>
 
@@ -55,9 +55,9 @@
 
       <figure class="frame">
         <div class="shot-bar"><i></i><i></i><i></i><span data-frame-url></span></div>
-        <button class="frame-img" type="button" data-frame-open aria-label="Open full size">
+        <button class="frame-img" type="button" data-frame-open aria-label="View the full page">
           <img data-frame-img alt="" width="1500" height="722">
-          <span class="frame-zoom">Click to enlarge</span>
+          <span class="frame-zoom">Click to view the full page ↓</span>
         </button>
       </figure>
       <div class="frame-caption">
@@ -92,10 +92,11 @@
   <!-- ========== Full-size viewer ========== -->
   <div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="Page screenshot">
     <button class="lb-close" type="button" data-lb-close aria-label="Close">✕</button>
+    <span class="lb-hint">Scroll to see the whole page · Esc to close</span>
     <div class="lb-scroll" data-lb-close-area><img data-lb-img alt=""></div>
   </div>
 
-  <script src="assets/js/main.js?v=7" defer></script>
-  <script src="assets/js/store.js?v=7" defer></script>
+  <script src="assets/js/main.js?v=8" defer></script>
+  <script src="assets/js/store.js?v=8" defer></script>
 </body>
 </html>

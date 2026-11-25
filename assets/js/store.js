@@ -101,9 +101,6 @@
       current = (i + pages.length) % pages.length;
       var pg = pages[current];
       img.src = pg.image;
-      img.onload = function () {
-        $('.frame-zoom').textContent = img.naturalHeight / img.naturalWidth > 0.6 ? 'Click to see the full page' : 'Click to enlarge';
-      };
       img.alt = (pg.label || 'Page') + ' page of ' + p.name;
       $('[data-frame-url]').textContent = domain(p.url || '') + '  ·  ' + (pg.label || '');
       $('[data-frame-label]').textContent = pg.label || '';
@@ -126,6 +123,7 @@
       lbImg.src = pages[current].image;
       lbImg.alt = img.alt;
       lb.hidden = false;
+      $('[data-lb-close-area]').scrollTop = 0;
       document.body.style.overflow = 'hidden';
       $('[data-lb-close]').focus();
     }
@@ -144,6 +142,7 @@
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
           show(current + (e.key === 'ArrowLeft' ? -1 : 1));
           lbImg.src = pages[current].image;
+          $('[data-lb-close-area]').scrollTop = 0;
         }
         return;
       }
