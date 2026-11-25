@@ -97,11 +97,12 @@
       "category": "Baby & newborn fashion",
       "location": "India · Kerala",
       "description": "A soft, minimal store for baby clothing, accessories and custom gift hampers.",
-      "color": "#E8DED2",
+      "color": "#e8ded2",
       "pages": [
         {
           "label": "Home",
-          "image": "assets/img/stores/hush-n-hem/home-full.webp"
+          "image": "assets/img/stores/hush-n-hem/home-full.webp",
+          "mobile": "assets/img/stores/hush-n-hem/home-mobile-mwvxyib2.webp"
         },
         {
           "label": "Collection",
