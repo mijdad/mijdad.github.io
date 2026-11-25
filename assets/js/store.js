@@ -47,7 +47,6 @@
     $('[data-store-cat]').textContent = p.category || 'Shopify store';
     $('[data-store-name]').textContent = p.name;
     $('[data-store-desc]').textContent = p.description || '';
-    $('[data-store-count]').textContent = pages.length + (pages.length === 1 ? ' page' : ' pages');
 
     if (p.location) {
       var loc = $('[data-store-loc]');
