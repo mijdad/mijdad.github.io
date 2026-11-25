@@ -12,15 +12,15 @@
       "pages": [
         {
           "label": "Home",
-          "image": "assets/img/stores/jersey-vault/home.webp"
+          "image": "assets/img/stores/jersey-vault/home-full.webp"
         },
         {
           "label": "Collection",
-          "image": "assets/img/stores/jersey-vault/collection.webp"
+          "image": "assets/img/stores/jersey-vault/collection-full.webp"
         },
         {
           "label": "Product",
-          "image": "assets/img/stores/jersey-vault/product.webp"
+          "image": "assets/img/stores/jersey-vault/product-full.webp"
         }
       ]
     },
@@ -35,23 +35,23 @@
       "pages": [
         {
           "label": "Home",
-          "image": "assets/img/stores/myyellow/home.webp"
+          "image": "assets/img/stores/myyellow/home-full.webp"
         },
         {
           "label": "Collection",
-          "image": "assets/img/stores/myyellow/collection.webp"
+          "image": "assets/img/stores/myyellow/collection-full.webp"
         },
         {
           "label": "Product",
-          "image": "assets/img/stores/myyellow/product.webp"
+          "image": "assets/img/stores/myyellow/product-full.webp"
         },
         {
           "label": "About",
-          "image": "assets/img/stores/myyellow/about.webp"
+          "image": "assets/img/stores/myyellow/about-full.webp"
         },
         {
           "label": "Contact",
-          "image": "assets/img/stores/myyellow/contact.webp"
+          "image": "assets/img/stores/myyellow/contact-full.webp"
         }
       ]
     },
@@ -66,27 +66,27 @@
       "pages": [
         {
           "label": "Home",
-          "image": "assets/img/stores/red-ribbon-cakes/home.webp"
+          "image": "assets/img/stores/red-ribbon-cakes/home-full.webp"
         },
         {
           "label": "Collection",
-          "image": "assets/img/stores/red-ribbon-cakes/collection.webp"
+          "image": "assets/img/stores/red-ribbon-cakes/collection-full.webp"
         },
         {
           "label": "Product",
-          "image": "assets/img/stores/red-ribbon-cakes/product.webp"
+          "image": "assets/img/stores/red-ribbon-cakes/product-full.webp"
         },
         {
           "label": "Create your own cake",
-          "image": "assets/img/stores/red-ribbon-cakes/create-your-own-cake.webp"
+          "image": "assets/img/stores/red-ribbon-cakes/create-your-own-cake-full.webp"
         },
         {
           "label": "About",
-          "image": "assets/img/stores/red-ribbon-cakes/about.webp"
+          "image": "assets/img/stores/red-ribbon-cakes/about-full.webp"
         },
         {
           "label": "Contact",
-          "image": "assets/img/stores/red-ribbon-cakes/contact.webp"
+          "image": "assets/img/stores/red-ribbon-cakes/contact-full.webp"
         }
       ]
     },
@@ -101,23 +101,23 @@
       "pages": [
         {
           "label": "Home",
-          "image": "assets/img/stores/hush-n-hem/home.webp"
+          "image": "assets/img/stores/hush-n-hem/home-full.webp"
         },
         {
           "label": "Collection",
-          "image": "assets/img/stores/hush-n-hem/collection.webp"
+          "image": "assets/img/stores/hush-n-hem/collection-full.webp"
         },
         {
           "label": "Product",
-          "image": "assets/img/stores/hush-n-hem/product.webp"
+          "image": "assets/img/stores/hush-n-hem/product-full.webp"
         },
         {
           "label": "About",
-          "image": "assets/img/stores/hush-n-hem/about.webp"
+          "image": "assets/img/stores/hush-n-hem/about-full.webp"
         },
         {
           "label": "Contact",
-          "image": "assets/img/stores/hush-n-hem/contact.webp"
+          "image": "assets/img/stores/hush-n-hem/contact-full.webp"
         }
       ]
     }
